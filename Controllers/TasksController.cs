@@ -3,89 +3,65 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using API_Net.DataAccess;
 using API_Net.Entities;
+using API_Net.Services;
 
 namespace API_Net.Controllers
 {
-    [Route("api/tasks")]
+    [Route("/api/[controller]")]
     [ApiController]
-    public class TaskController : ControllerBase
+    public class TareasController : ControllerBase
     {
-        private readonly ContextDB _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public TaskController(ContextDB context)
+        public TareasController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
-        public IActionResult GetTasks()
+        [Route("GetAllTareas")]
+        public async Task<IActionResult> GetAll()
         {
-            var tasks = _context.Tasks.ToList();
-            return Ok(tasks);
-        }
-
-        [HttpGet("{id}")]
-        public IActionResult GetTaskById(int id)
-        {
-            var task = _context.Tasks.FirstOrDefault(t => t.Id == id);
-
-            if (task == null)
-                return NotFound();
-
-            return Ok(task);
+            return Ok(await _unitOfWork.TareaRepository.GetAllTareas());
         }
 
         [HttpPost]
-        public IActionResult CreateTask([FromBody] TaskDTO taskDTO)
+        [Route("PostTarea")]
+        public async Task<ActionResult> Register(TareaRegisterDTO tareaRegisterDTO)
         {
-            if (taskDTO == null)
-                return BadRequest();
-
-            var task = new Entities.Task
+            var result = await _unitOfWork.TareaRepository.InsertTarea(tareaRegisterDTO);
+            if (result)
             {
-                Title = taskDTO.Title,
-                Description = taskDTO.Description,
-                IsCompleted = taskDTO.IsCompleted
-            };
-
-            _context.Tasks.Add(task);
-            _context.SaveChanges();
-
-            return CreatedAtAction(nameof(GetTaskById), new { id = task.Id }, task);
+                await _unitOfWork.Complete();
+                return Ok("Guardado");
+            }
+            return BadRequest("Error");
         }
 
-        [HttpPut("{id}")]
-        public IActionResult UpdateTask(int id, [FromBody] TaskDTO taskDTO)
+        [HttpPut]
+        [Route("UpdateTarea")]
+        public async Task<ActionResult> Update(int id, TareaRegisterDTO tareaRegisterDTO)
         {
-            var task = _context.Tasks.FirstOrDefault(t => t.Id == id);
-
-            if (task == null)
-                return NotFound();
-
-            task.Title = taskDTO.Title;
-            task.Description = taskDTO.Description;
-            task.IsCompleted = taskDTO.IsCompleted;
-
-            _context.SaveChanges();
-
-            return NoContent();
+            var result = await _unitOfWork.TareaRepository.UpdateTarea(tareaRegisterDTO, id);
+            if (result)
+            {
+                await _unitOfWork.Complete();
+                return Ok("Actualizado");
+            }
+            return BadRequest("Error");
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult DeleteTask(int id)
+        [HttpDelete]
+        [Route("DeleteTarea")]
+        public async Task<ActionResult> Delete(int id)
         {
-            var task = _context.Tasks.FirstOrDefault(t => t.Id == id);
-
-            if (task == null)
-                return NotFound();
-
-            _context.Tasks.Remove(task);
-            _context.SaveChanges();
-
-            return NoContent();
+            var result = await _unitOfWork.TareaRepository.DeleteTarea(id);
+            if (result)
+            {
+                await _unitOfWork.Complete();
+                return Ok("Eliminado");
+            }
+            return BadRequest("Error");
         }
     }
-
-
 }
-

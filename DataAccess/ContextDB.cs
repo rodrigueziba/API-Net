@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using API_Net.Entities;
-
+using API_Net.DataAccess.DatabaseSeeding;
 
 namespace API_Net.DataAccess
 {
@@ -12,8 +12,21 @@ namespace API_Net.DataAccess
 
         }
 
-        public DbSet<Entities.Task> Tasks { get; set; }
+        public DbSet<Tarea> Tareas { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            var seeders = new List<IEntitySeeder>
+            {
+                new TareaSeeder()
+            };
 
+            foreach (var seeder in seeders)
+            {
+                seeder.SeedDatabase(modelBuilder);
+            }
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

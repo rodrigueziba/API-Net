@@ -1,11 +1,13 @@
 ﻿namespace API_Net.DTOs
 {
-    public class TaskDTO
+    public class TareaRegisterDTO
     {
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public bool IsCompleted { get; set; }
-    }
+        public string TareaTitle { get; set; }
 
+        public string TareaDescription { get; set; }
+
+        public bool IsCompleted { get; set; }
+
+
+    }
 }

@@ -18,13 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DataAccess\" />
+    <Folder Include="DataAccess\DatabaseSeeding\NewFolder\" />
     <Folder Include="DTOs\" />
-    <Folder Include="Entities\" />
     <Folder Include="Helpers\" />
     <Folder Include="Infraestructure\" />
     <Folder Include="Migrations\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

@@ -2,19 +2,23 @@
 using Microsoft.EntityFrameworkCore;
 using API_Net.DataAccess;
 using API_Net.Repository.Interfaces;
+using API_Net.DTOs;
+using API_Net.Entities;
+using API_Net.Services;
+using System.Threading;
 
 namespace API_Net.Repository
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-
         protected readonly ContextDB _contextDB;
+
         public Repository(ContextDB contextDB)
         {
             _contextDB = contextDB;
         }
 
-        public async Task<List<T>> GetAll()
+        public virtual async Task<List<T>> GetAll()
         {
             var entity = await _contextDB.Set<T>().ToListAsync();
             return entity;
